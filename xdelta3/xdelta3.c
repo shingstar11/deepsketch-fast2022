@@ -1689,7 +1689,7 @@ xd3_decode_bytes (xd3_stream *stream, uint8_t *buf, usize_t *pos, usize_t size)
 	}
 
       want = size - *pos;
-      take = min (want, stream->avail_in);
+      take = XDELTA3_MIN (want, stream->avail_in);
 
       memcpy (buf + *pos, stream->next_in, (size_t) take);
 
@@ -1749,7 +1749,7 @@ xd3_emit_bytes (xd3_stream     *stream,
 	  output = (*outputp) = aoutput;
 	}
 
-      take = min (output->avail - output->next, size);
+      take = XDELTA3_MIN (output->avail - output->next, size);
 
       memcpy (output->base + output->next, base, (size_t) take);
 
@@ -2676,7 +2676,7 @@ xd3_set_source (xd3_stream *stream,
       src->max_winsize = xd3_xoff_roundup(src->max_winsize);
       IF_DEBUG1 (DP(RINT "raising src_maxsize to %u\n", src->blksize));
     }
-  src->max_winsize = max(src->max_winsize, XD3_ALLOCSIZE);
+  src->max_winsize = XDELTA3_MAX(src->max_winsize, XD3_ALLOCSIZE);
 
   return 0;
 }
@@ -3122,7 +3122,7 @@ xd3_iopt_flush_instructions (xd3_stream *stream, int force)
 	  /* Try to balance the length of both instructions, but avoid
 	   * making both longer than MAX_MATCH_SPLIT . */
 	  average = gap / 2;
-	  newsize = min (MAX_MATCH_SPLIT, gap - average);
+	  newsize = XDELTA3_MIN (MAX_MATCH_SPLIT, gap - average);
 
 	  /* Should be possible to simplify this code. */
 	  if (newsize > r1->size)
@@ -3627,7 +3627,7 @@ xd3_encode_buffer_leftover (xd3_stream *stream)
 
   /* Copy into the buffer. */
   room = stream->winsize - stream->buf_avail;
-  take = min (room, stream->avail_in);
+  take = XDELTA3_MIN (room, stream->avail_in);
 
   memcpy (stream->buf_in + stream->buf_avail, stream->next_in, take);
 
@@ -4047,7 +4047,7 @@ xd3_process_stream (int            is_encode,
 		    usize_t        output_size_max)
 {
   usize_t ipos = 0;
-  usize_t n = min(stream->winsize, input_size);
+  usize_t n = XDELTA3_MIN(stream->winsize, input_size);
 
   (*output_size) = 0;
 
@@ -4063,7 +4063,7 @@ xd3_process_stream (int            is_encode,
 	{
 	case XD3_OUTPUT: { /* memcpy below */ break; }
 	case XD3_INPUT: {
-	  n = min(stream->winsize, input_size - ipos);
+	  n = XDELTA3_MIN(stream->winsize, input_size - ipos);
 	  if (n == 0) {
 	    goto done;
 	  }
@@ -4135,9 +4135,9 @@ xd3_process_memory (int            is_encode,
 
   if (is_encode)
     {
-      config.winsize = min(input_size, (usize_t) XD3_DEFAULT_WINSIZE);
-      config.iopt_size = min(input_size / 32, XD3_DEFAULT_IOPT_SIZE);
-      config.iopt_size = max(config.iopt_size, 128U);
+      config.winsize = XDELTA3_MIN(input_size, (usize_t) XD3_DEFAULT_WINSIZE);
+      config.iopt_size = XDELTA3_MIN(input_size / 32, XD3_DEFAULT_IOPT_SIZE);
+      config.iopt_size = XDELTA3_MAX(config.iopt_size, 128U);
       config.sprevsz = xd3_pow2_roundup (config.winsize);
     }
 
@@ -4392,7 +4392,7 @@ xd3_srcwin_setup (xd3_stream *stream)
    * issued, but we have to decide the source window base and length
    * now.  */
   src->srcbase = stream->match_minaddr;
-  src->srclen  = max ((usize_t) length,
+  src->srclen  = XDELTA3_MAX ((usize_t) length,
 		      stream->avail_in + (stream->avail_in >> 2));
 
   /* OPT: If we know the source size, it might be possible to reduce
@@ -4655,7 +4655,7 @@ xd3_source_extend_match (xd3_stream *stream)
 	      return ret;
 	    }
 
-	  tryrem = min (tryoff, stream->match_maxback - stream->match_back);
+	  tryrem = XDELTA3_MIN (tryoff, stream->match_maxback - stream->match_back);
 
 	  IF_DEBUG2(DP(RINT "[maxback] maxback %u trysrc %"Q"u/%u tgt %u tryrem %u\n",
 		       stream->match_maxback, tryblk, tryoff, streamoff, tryrem));
@@ -4704,7 +4704,7 @@ xd3_source_extend_match (xd3_stream *stream)
 	  return ret;
 	}
 
-      tryrem = min(stream->match_maxfwd - stream->match_fwd,
+      tryrem = XDELTA3_MIN(stream->match_maxfwd - stream->match_fwd,
 		   src->onblk - tryoff);
 
       if (tryrem == 0)
@@ -5046,7 +5046,7 @@ xd3_srcwin_move_point (xd3_stream *stream, usize_t *next_move_point)
 
   /* Begin by advancing at twice the input rate, up to half the
    * maximum window size. */
-  logical_input_cksum_pos = min((stream->total_in + stream->input_position) * 2,
+  logical_input_cksum_pos = XDELTA3_MIN((stream->total_in + stream->input_position) * 2,
 				(stream->total_in + stream->input_position) +
 				  (stream->src->max_winsize / 2));
 
@@ -5273,7 +5273,7 @@ XD3_TEMPLATE(xd3_string_match_) (xd3_stream *stream)
    * of length 8 at the next position. */
   if (xd3_iopt_last_matched (stream) > stream->input_position)
     {
-      stream->min_match = max(MIN_MATCH,
+      stream->min_match = XDELTA3_MAX(MIN_MATCH,
 			      1 + xd3_iopt_last_matched(stream) -
 			      stream->input_position);
     }
@@ -5524,7 +5524,7 @@ int xdelta3_compress(char* InFile, int InSize, char* SrcFile, int SrcSize, char*
 	source.curblk = (const unsigned char*)malloc(source.blksize);
 
 	/* Load 1st block of stream. */
-	source.onblk = min(source.blksize, SrcSize);
+	source.onblk = XDELTA3_MIN(source.blksize, SrcSize);
 	memcpy((void*)source.curblk, SrcFile, source.onblk);
 	SrcSize -= source.onblk;
 	source.curblkno = 0;
@@ -5535,7 +5535,7 @@ int xdelta3_compress(char* InFile, int InSize, char* SrcFile, int SrcSize, char*
 
 	do
 	{
-		Input_Buf_Read = min(BufSize, InSize);
+		Input_Buf_Read = XDELTA3_MIN(BufSize, InSize);
 		memcpy(Input_Buf, InFile, Input_Buf_Read);
 		if (Input_Buf_Read < BufSize)
 		{
@@ -5566,7 +5566,7 @@ process:
 
 			case XD3_GETSRCBLK:
 				{
-					source.onblk = min(source.blksize, SrcSize);
+					source.onblk = XDELTA3_MIN(source.blksize, SrcSize);
 					memcpy((void*)source.curblk, SrcFile + source.blksize * source.getblkno, source.onblk);
 					SrcSize -= source.onblk;
 					source.curblkno = source.getblkno;

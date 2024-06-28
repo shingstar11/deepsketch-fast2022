@@ -5,7 +5,7 @@
 #include <map>
 #include <queue>
 #include <thread>
-#include "../xxhash.h"
+#include "../xxHash/xxhash.h"
 #include "../xdelta3/xdelta3.h"
 #define BLOCK_SIZE 4096
 #define INF 987654321
@@ -91,7 +91,7 @@ void bruteForceCluster(vector<int>& todo, vector<vector<int>>& cluster, int thre
 	queue<int> produceQ;
 	priority_queue<BFinfo, vector<BFinfo>, greater<BFinfo>> resultQ;
 	
-	for (int i = 0; i < min(MAX_QSIZE, todo.size()); ++i) produceQ.push(i);
+	for (int i = 0; i < XDELTA3_MIN(MAX_QSIZE, todo.size()); ++i) produceQ.push(i);
 
 	BruteForceClusterArgument arg[NUM_THREAD - 1];
 	for (int i = 0; i < NUM_THREAD - 1; ++i) {

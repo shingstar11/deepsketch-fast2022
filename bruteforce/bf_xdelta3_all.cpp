@@ -4,7 +4,7 @@
 #include <set>
 #include <algorithm>
 #include "../xdelta3/xdelta3.h"
-#include "../xxhash.h"
+#include "../xxHash/xxhash.h"
 #include "../lz4.h"
 #define BLOCK_SIZE 4096
 #define MAX_THREAD 256

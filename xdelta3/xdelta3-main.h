@@ -983,7 +983,7 @@ xd3_posix_io (int fd, uint8_t *buf, size_t size,
 
   while (nproc < size)
     {
-      size_t tryread = min(size - nproc, 1U << 30);
+      size_t tryread = XDELTA3_MIN(size - nproc, 1U << 30);
       ssize_t result = (*func) (fd, buf + nproc, tryread);
 
       if (result < 0)
@@ -1935,7 +1935,7 @@ main_merge_output (xd3_stream *stream, main_file *ofile)
 	     inst_pos < stream->whole_target.instlen)
 	{
 	  xd3_winst *inst = &stream->whole_target.inst[inst_pos];
-	  usize_t take = min(inst->size, window_size - window_pos);
+	  usize_t take = XDELTA3_MIN(inst->size, window_size - window_pos);
 	  xoff_t addr;
 
 	  switch (inst->type)
@@ -1958,8 +1958,8 @@ main_merge_output (xd3_stream *stream, main_file *ofile)
 	      if (inst->mode != 0)
 		{
 		  if (window_srcset) {
-		    window_srcmin = min(window_srcmin, inst->addr);
-		    window_srcmax = max(window_srcmax, inst->addr + take);
+		    window_srcmin = XDELTA3_MIN(window_srcmin, inst->addr);
+		    window_srcmax = XDELTA3_MAX(window_srcmax, inst->addr + take);
 		  } else {
 		    window_srcset = 1;
 		    window_srcmin = inst->addr;
@@ -2419,7 +2419,7 @@ main_secondary_decompress_check (main_file  *file,
 {
   int ret;
   usize_t i;
-  usize_t try_read = min (input_size, XD3_ALLOCSIZE);
+  usize_t try_read = XDELTA3_MIN (input_size, XD3_ALLOCSIZE);
   size_t  check_nread = 0;
   uint8_t check_buf[XD3_ALLOCSIZE];  /* TODO: stack limit */
   const main_extcomp *decompressor = NULL;
@@ -2943,10 +2943,10 @@ main_get_winsize (main_file *ifile) {
 
   if (main_file_stat (ifile, &file_size) == 0)
     {
-      size = (usize_t) min(file_size, (xoff_t) size);
+      size = (usize_t) XDELTA3_MIN(file_size, (xoff_t) size);
     }
 
-  size = max(size, XD3_ALLOCSIZE);
+  size = XDELTA3_MAX(size, XD3_ALLOCSIZE);
 
   if (option_verbose > 1)
     {
@@ -3178,7 +3178,7 @@ main_input (xd3_cmd     cmd,
 
       input_remain = XOFF_T_MAX - input_offset;
 
-      try_read = (usize_t) min ((xoff_t) config.winsize, input_remain);
+      try_read = (usize_t) XDELTA3_MIN ((xoff_t) config.winsize, input_remain);
 
       if ((ret = main_read_primary_input (ifile, main_bdata,
 					  try_read, & nread)))

@@ -305,11 +305,18 @@ typedef int              (xd3_comp_table_func) (xd3_stream *stream,
 #define XD3_ASSERT(x) (void)0
 #endif  /* XD3_DEBUG */
 
-#ifndef max
-#define max(x,y) ((x) < (y) ? (y) : (x))
+// #ifndef max
+// #define max(x,y) ((x) < (y) ? (y) : (x))
+// #endif
+// #ifndef min
+// #define min(x,y) ((x) < (y) ? (x) : (y))
+// #endif
+
+#ifndef XDELTA3_MAX
+#define XDELTA3_MAX(x,y) ((x) < (y) ? (y) : (x))
 #endif
-#ifndef min
-#define min(x,y) ((x) < (y) ? (x) : (y))
+#ifndef XDELTA3_MIN
+#define XDELTA3_MIN(x,y) ((x) < (y) ? (x) : (y))
 #endif
 
 /****************************************************************

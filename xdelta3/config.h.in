@@ -3,9 +3,6 @@
 /* Define if pointers to integers require aligned access */
 #undef HAVE_ALIGNED_ACCESS_REQUIRED
 
-/* Define to 1 if you have the <dlfcn.h> header file. */
-#undef HAVE_DLFCN_H
-
 /* Define to 1 if you have the <inttypes.h> header file. */
 #undef HAVE_INTTYPES_H
 
@@ -15,11 +12,11 @@
 /* Define to 1 if you have the <lzma.h> header file. */
 #undef HAVE_LZMA_H
 
-/* Define to 1 if you have the <memory.h> header file. */
-#undef HAVE_MEMORY_H
-
 /* Define to 1 if you have the <stdint.h> header file. */
 #undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdio.h> header file. */
+#undef HAVE_STDIO_H
 
 /* Define to 1 if you have the <stdlib.h> header file. */
 #undef HAVE_STDLIB_H
@@ -39,9 +36,6 @@
 /* Define to 1 if you have the <unistd.h> header file. */
 #undef HAVE_UNISTD_H
 
-/* Define to the sub-directory where libtool stores uninstalled libraries. */
-#undef LT_OBJDIR
-
 /* Define to the address where bug reports for this package should be sent. */
 #undef PACKAGE_BUGREPORT
 
@@ -60,17 +54,7 @@
 /* Define to the version of this package. */
 #undef PACKAGE_VERSION
 
-/* The size of `size_t', as computed by sizeof. */
-#undef SIZEOF_SIZE_T
-
-/* The size of `unsigned int', as computed by sizeof. */
-#undef SIZEOF_UNSIGNED_INT
-
-/* The size of `unsigned long', as computed by sizeof. */
-#undef SIZEOF_UNSIGNED_LONG
-
-/* The size of `unsigned long long', as computed by sizeof. */
-#undef SIZEOF_UNSIGNED_LONG_LONG
-
-/* Define to 1 if you have the ANSI C header files. */
+/* Define to 1 if all of the C90 standard headers exist (not just the ones
+   required in a freestanding environment). This macro is provided for
+   backward compatibility; new code need not use it. */
 #undef STDC_HEADERS
